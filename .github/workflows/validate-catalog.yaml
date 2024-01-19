@@ -1,0 +1,16 @@
+name: validate-catalog
+on:
+  #  push:
+  #    branches: [ main ]
+  #  pull_request:
+  #    branches: [ main ]
+
+jobs:
+  test:
+    name: validate catalog
+    runs-on: ubuntu-latest
+    steps:
+      - name: validates the modified catalog
+        uses: joelanford/opm-validate@main
+        with:
+          catalog: .
