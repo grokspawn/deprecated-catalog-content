@@ -17,7 +17,32 @@ With FBC catalogs, operator authors have much greater flexibility to express bun
 ### This is fine for all future bundle deployments and graph updates, but what about all the existing catalog content?
 **This repo is a request to operator author operators to start providing deprecation metadata about their operators and their upgrade graphs now, without requiring a bundle-republish or graph update, to be used in the OCP4.15 (and later) releases.**
 
-We ask that operator authors open a PR against this repository with the deprecations relevant to them.
+## What Should I do?
+Clone the repo, and add deprecation metadata suitable for your operator(s) to the directory structure.  
+There is an example (but commented-out) set of deprecation available to follow in `deprecations.yaml` at
+```tree
+redhat-operator-index
+└── 4.15
+    └── example-mypackage
+        └── deprecations.yaml
+```
+
+You may run validate crafted deprecation metadata against the appropriate catalog by executing ./scripts/grab_catalog.sh, like 
+```sh
+scripts/grab_catalog.sh registry.redhat.io/redhat/redhat-operator-index:v4.15 redhat-operator-index/4.15/redhat-operator-index-4.15.yaml
+```
+Before running the script, it's necessary to successfully `docker login registry.redhat.io` to ensure registry access. 
+
+The script will download and install the latest version of upstream `opm` and use it to render the latest version of the OCP4.15 redhat-operator-index catalog to ./redhat-operator-index/4.15/redhat-operator-index-4.15.yaml. 
+
+Once downloaded, you may validate the combined catalog + deprecation metadata by running 
+```sh
+./opm validate ./redhat-operator-index
+```
+A zero exit status indicates success.
+
+On PR push to github, a workflow will trigger to validate the catalog configuration.  
+
 <hr>
 
 ## Schema and Guardrails
