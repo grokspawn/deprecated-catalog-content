@@ -12,6 +12,9 @@ DESTINATION=$2
 OPM_VERSION=${3:-latest}
 FORMAT=${4:-yaml}
 
+DEST_DIR_PART=$(dirname ${DESTINATION})
+DEST_FILE_PART=$(basename ${DESTINATION})
+
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m | sed 's/x86_64/amd64/')
 
@@ -37,9 +40,21 @@ if [[ $(version ${COMPARE_VER}) -ge $(version "1.28.0") ]]; then
     OPM_OPTS="--migrate"
 fi
 
-set -x 
-curl -sLO "https://github.com/operator-framework/operator-registry/releases/download/${OPM_VERSION}/${OS}-${ARCH}-opm" && chmod +x "${OS}-${ARCH}-opm" && mv "${OS}-${ARCH}-opm" "./opm"
+if [ ! -e ./opm ]; then
+    set -x 
+    curl -sLO "https://github.com/operator-framework/operator-registry/releases/download/${OPM_VERSION}/${OS}-${ARCH}-opm" && chmod +x "${OS}-${ARCH}-opm" && mv "${OS}-${ARCH}-opm" "./opm"
+    set +x
+fi
 
-./opm render ${OPM_OPTS} ${CATALOG} -o ${FORMAT} > ${DESTINATION}
+
+if [ ! -e ${DESTINATION} ]; then 
+    mkdir -p ${DEST_DIR_PART}
+fi
+
+if [ $(find ${DEST_DIR_PART} -mtime -1 -type f -name ${DEST_FILE_PART} 2>/dev/null) ]; then
+    echo "cached catalog is fresh (${DESTINATION})"
+else
+    ./opm render ${OPM_OPTS} ${CATALOG} -o ${FORMAT} > ${DESTINATION}
+fi
 
 

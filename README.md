@@ -27,21 +27,15 @@ redhat-operator-index
         └── deprecations.yaml
 ```
 
-You may run validate crafted deprecation metadata against the appropriate catalog by executing ./scripts/grab_catalog.sh, like 
-```sh
-scripts/grab_catalog.sh registry.redhat.io/redhat/redhat-operator-index:v4.15 redhat-operator-index/4.15/redhat-operator-index-4.15.yaml
-```
+You may run validate crafted deprecation metadata against the appropriate catalog by executing `scripts/validate_contribution.sh`.
+
 Before running the script, it's necessary to successfully `docker login registry.redhat.io` to ensure registry access. 
 
-The script will download and install the latest version of upstream `opm` and use it to render the latest version of the OCP4.15 redhat-operator-index catalog to ./redhat-operator-index/4.15/redhat-operator-index-4.15.yaml. 
+The script will download and install the latest version of upstream `opm` and use it to render the latest version of the OCP4.15 redhat-operator-index catalog to ./redhat-operator-index/4.15/redhat-operator-index-v4.15.yaml. 
 
-Once downloaded, you may validate the combined catalog + deprecation metadata by running 
-```sh
-./opm validate ./redhat-operator-index
-```
 A zero exit status indicates success.
 
-On PR push to github, a workflow will trigger to validate the catalog configuration.  
+On PR push to github, a similar workflow will trigger to validate the catalog configuration.  
 
 <hr>
 
